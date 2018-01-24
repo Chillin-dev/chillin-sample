@@ -1,0 +1,185 @@
+,動作,"要
+ session","要
+ 暗号化",User/Admin,Role,PATH,IN,OUT(注釈付き),備考
+認証,UUID作成,,●,User,Auth,/api/auth/createuuid,"{
+  ""mail"": ""hoge@queue-inc.com"",
+  ""password"": ""hoge""
+}","{
+  ""uuid"": ""fdsafdsafdlskajfldskajfldskahfhiue4928uidal28yehi1jkfdsafdsa"",
+  ""session"": ""e3ec1525aa784fe9601d75f64f256a99491acd56"",
+  ""session_expire"": 1334323322323,
+  ""regist_time"": 123443322434,
+  ""firstlogin_status"": 0,
+  ""salt"": ""is1sS39d""
+}","[ 1 ] クライアントサイドでメールアドレスとパスワードを送信
+([ 2 ] ~ [ 5 ]はサーバーサイドで初回ログイン時のみ行なってください )
+[ 2 ] サーバーサイドで取得したトークンを使って、名前・メールアドレス・生年月日・性別を取得する
+[ 3 ] UUIDを必ず衝突しない形でサーバー側で発行する(prefixなどを利用してください)
+[ 4 ] 次回のsession発行時にchecksumを作成するのでその際に使用するsaltを発行する
+[ 5 ] DBにユーザー情報を登録する
+[ 6 ] session = encrypt(UUID + "","" + user_id + "","" + shard_id + "","" + session_expire)でsessionを発行する
+(暗号化の鍵はサーバーのみで保管するようにしてください)
+[ 7 ] 情報をクライアントに返す
+[ 8 ] クライアントサイドでは、UUID, Salt, sessionを保持するようにしておいてください。"
+,セッションを作成,,●,User,Auth,/api/auth/createsession,"{
+  ""uuid"": ""fd4230uifsdlakfjdsa09duojsailfkdsalfkdsja"",
+  ""cs"": ""abcsejghijk=MD5(uuid + salt)""
+}","{
+  ""session"": ""e3ec1525aa784fe9601d75f64f256a99491acd56"",
+  ""session_expire"": 1334323322323,
+  ""regist_time"": 123443322434,
+  ""firstlogin_status"": 0,
+  ""salt"": ""is1sS39d""
+}","[ 1 ] UUIDからユーザー情報を取得する
+[ 2 ] UUIDとcheck sumから情報の誤り検出を行う
+[ 3 ] ユーザー情報を使用してsessionを発行します
+[ 4 ] 情報を返す
+[ 5 ] クライアントサイドでは、UUID, Salt, sessionを保持するようにしてください
+
+基本的にはuser側で405が帰って来たらこちらのendpointを叩くようにしてみてください"
+ユーザー情報,ユーザー情報取得,●,●,User,User,/api/member/me,{},"{
+   ""name"": ""taro"",
+   ""birthday"": ""1994/05/10"",
+   ""gender"": ""M/F"",
+   ""address"": ""your address will show here"",
+   ""mail"": ""hoge@gmail.com"",
+   ""tel"": ""080000000000""
+}",kyc_checkは各社で確認してもらえることになれば削除します。
+,ユーザー情報編集,●,●,User,User,/api/member/me/edit,"{
+   ""name"": ""taro"",
+   ""birthday"": ""1994/05/10"",
+   ""gender"": ""M/F"",
+   ""address"": ""your address will show here"",
+   ""company"": ""Phillipine""
+}","{
+  ""message"": ""ok""
+}","[1] ユーザー情報を受け取る
+[2] バリデーションして、問題なければokを返す
+[3] エラーの場合はエラーを返す"
+ホテル情報,ホテルマスターデータ,,,User,Hotel,/api/hotel/me,"{
+  ""hotel_id"": 1
+}","{
+  ""name"": ""HOTEL SHE, KYOTO"",
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""hashtag"": ""hotelsheosaka"",
+  ""twitter"": ""アカウントid"",
+  ""address"": ""〒552-0012 大阪府大阪市港区市岡１丁目２−５"",
+  ""location"": ""座標""
+}",map等表示したい情報によって保持する情報をかえたい
+,参考価格,,,User,Hotel,/api/hotel/price,"{
+  ""date"": ""2018-01-25"",
+  ""people_num"": 2
+}","{
+  ""prices"": [
+     {
+        ""date"": ""2018-01-22"",
+        ""min_price"": ""12260""
+     },
+     {
+        ""date"": ""2018-01-23"",
+        ""min_price"": ""12260""
+     },
+     {
+        ""date"": ""2018-01-24"",
+        ""min_price"": ""12260""
+     },
+     {
+        ""date"": ""2018-01-25"",
+        ""min_price"": ""12260""
+     },
+     {
+        ""date"": ""2018-01-26"",
+        ""min_price"": ""12260""
+     },
+     {
+        ""date"": ""2018-01-27"",
+        ""min_price"": ""12260""
+     },
+     {
+        ""date"": ""2018-01-28"",
+        ""min_price"": ""12260""
+     }
+  ]
+}",宿泊人数と宿泊予定日を送ると、参考価格が返る
+,宿泊不可能日検索,,,User,Hotel,/api/hotel/day,"{
+  ""people_num"": 2
+}","{
+  ""unable_date"": [
+     ""2018-01-20"",
+     ""2018-01-25""
+  ]
+}",サーバーの負荷を考え、宿泊不可能な日を返す
+,選択可能プラン検索,,,User,Hotel,/api/hotel/plan,"{
+  ""people_num"": 2,
+  ""checkin"": ""2018-01-20"",
+  ""checkout"": ""2018-01-22""
+}","{
+  ""plans"": [
+    {
+      ""plan_id"": 1,
+      ""name"": ""朝食付きプラン"",
+      ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+      ""price"": 10000,
+      ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png""
+    },
+    {
+       ""plan_id"": 1,
+      ""name"": ""朝食付きプラン"",
+      ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+      ""price"": 10000,
+      ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png""
+    },
+    {
+       ""plan_id"": 1,
+      ""name"": ""朝食付きプラン"",
+      ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+      ""price"": 10000,
+      ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png""
+    },
+    {
+      ""plan_id"": 1,
+      ""name"": ""朝食付きプラン"",
+      ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+      ""price"": 10000,
+      ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png""
+    }
+  ]
+}",
+,プラン詳細,,,User,Hotel,/api/hotel/plan/detail,"{
+  ""plan_id"": 1,
+  ""people_num"": 2
+}","{
+  ""name"": ""朝食付きプラン"",
+  ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+  ""detail"": ""詳細説明(HTMLタグ使えるようにする？)"",
+  ""price"": 10000,
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""image_urls"": [
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    },
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    },
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    }
+  ]
+}",imageはなにが必要...？
+,予約,,,User,Hotel,/api/hotel/reservation,"{ 
+  ""name"": ""永田諒"",
+  ""tel"": ""08000000000"",
+  ""address"": ""東京都渋谷区松濤1-17-3"",
+  ""mail"": ""hoge@gmail.com"",
+  ""people_num"": 2,
+  ""checkin"": ""2018-01-20"",
+  ""checkout"": ""2018-01-22"",
+  ""plan_id"": 1,
+  ""comment"": ""早めにcheckinしたいです""
+}","{
+  ""reservation_num"": 111111
+}","後に支払いシステム組み込みます
+個人情報はapiから取得して、変更可能なようにしておいてください"

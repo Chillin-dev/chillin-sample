@@ -1,0 +1,385 @@
+,動作,"要
+ session","要
+ 暗号化",User/Admin,Role,PATH,IN,OUT(注釈付き),備考
+認証,店舗登録,,●,Admin,Auth,/cms/auth/createaccount,"{
+  ""mail"": ""hoge@queue-inc.com"",
+  ""password"": ""hogehoge"",
+  ""name"": ""hotel she, osaka""
+}","{
+  ""uuid"": ""fdsafdsafdlskajfldskajfldskahfhiue4928uidal28yehi1jkfdsafdsa"",
+  ""session"": ""e3ec1525aa784fe9601d75f64f256a99491acd56"",
+  ""session_expire"": 1334323322323,
+  ""regist_time"": 123443322434,
+  ""firstlogin_status"": 0,
+  ""salt"": ""is1sS39d""
+}","[ 1 ] クライアントサイドでメールアドレスとパスワードを送信
+([ 2 ] ~ [ 5 ]はサーバーサイドで初回ログイン時のみ行なってください )
+[ 2 ] サーバーサイドで取得したトークンを使って、名前・メールアドレス・生年月日・性別を取得する
+[ 3 ] UUIDを必ず衝突しない形でサーバー側で発行する(prefixなどを利用してください)
+[ 4 ] 次回のsession発行時にchecksumを作成するのでその際に使用するsaltを発行する
+[ 5 ] DBにユーザー情報を登録する
+[ 6 ] session = encrypt(UUID + "","" + user_id + "","" + shard_id + "","" + session_expire)でsessionを発行する
+(暗号化の鍵はサーバーのみで保管するようにしてください)
+[ 7 ] 情報をクライアントに返す
+[ 8 ] クライアントサイドでは、UUID, Salt, sessionを保持するようにしておいてください。"
+,サインイン,,●,Admin,Auth,/cms/auth/signin,"{
+  ""uuid"": ""fd4230uifsdlakfjdsa09duojsailfkdsalfkdsja"",
+  ""cs"": ""abcsejghijk=MD5(uuid + salt)""
+}","{
+  ""session"": ""e3ec1525aa784fe9601d75f64f256a99491acd56"",
+  ""session_expire"": 1334323322323,
+  ""regist_time"": 123443322434,
+  ""firstlogin_status"": 0,
+  ""salt"": ""is1sS39d""
+}","[ 1 ] UUIDからユーザー情報を取得する
+[ 2 ] UUIDとcheck sumから情報の誤り検出を行う
+[ 3 ] ユーザー情報を使用してsessionを発行します
+[ 4 ] 情報を返す
+[ 5 ] クライアントサイドでは、UUID, Salt, sessionを保持するようにしてください
+
+基本的にはuser側で405が帰って来たらこちらのendpointを叩くようにしてみてください"
+料金,料金ランク登録,●,●,Admin,Price,/cms/price/registration,"{
+  ""prices"": [
+    { 
+      ""price_id"": 1,
+      ""price"": 20000,
+      ""color"": ""#111111""
+    },
+    {
+      ""price"": 20000,
+      ""color"": ""#111111""
+    }
+  ]
+}","{
+  ""message"": ""ok""
+}","編集と新規に追加するもののみ送ってください
+編集はid混み、新規はidなしで送ってください"
+,料金ランク取得,●,●,Admin,Price,/cms/price,"{
+
+}","{
+  ""prices"": [
+    { 
+      ""price_id"": 1,
+      ""price"": 20000,
+      ""color"": ""#111111""
+    },
+    { 
+      ""price_id"": 1,
+      ""price"": 20000,
+      ""color"": ""#111111""
+    },
+    { 
+      ""price_id"": 1,
+      ""price"": 20000,
+      ""color"": ""#111111""
+    }
+  ]
+}",
+カレンダー,カレンダー取得,●,●,Admin,Calender,/cms/carender,"{
+  ""year"": 2018,
+  ""month"": 2
+}","{
+  ""date"": [
+    {
+       ""day"": 1,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 2,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 3,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 4,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 5,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 6,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 7,
+       ""price_id"": 1
+    }
+  ]
+}",DB設計迷い中です
+,カレンダー設定保存,●,●,Admin,Calender,/cms/carender/register,"{
+  ""date"": [
+    {
+       ""day"": 1,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 2,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 3,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 4,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 5,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 6,
+       ""price_id"": 1
+    },
+    {
+       ""day"": 7,
+       ""price_id"": 1
+    }
+  ]
+}","{
+  ""message"": ""ok""
+}",変更のある部分だけ送ってください
+画像,画像upload,●,●,Admin,image,/cms/image/upload,"{
+  ""file"": ""multipartで送ってください""
+}","{
+  ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png""
+}",
+,画像一覧取得,●,●,Admin,image,/cms/image,{},"{
+  ""images"": [
+     {
+       ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+       ""image_id"": 1
+     },
+     {
+       ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+       ""image_id"": 1
+     },
+     {
+       ""image_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+       ""image_id"": 1
+     }
+  ]
+}","画像を何かで制限する必要はあるか？
+state or sessionStrageで保持しておいてください"
+プラン,plan登録,●,●,Admin,Plan,/cms/plan/add,"{
+  ""name"": ""朝食付きプラン"",
+  ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+  ""detail"": ""詳細説明(HTMLタグ使えるようにする？)"",
+  ""price_type"": ""solid / dynamic"",
+  ""price"": 10000,
+  ""period_type"": ""limited / always"",
+  ""start_dt"": ""2018-01-20"",
+  ""end_dt"": ""20180-01-25"",
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""image_urls"": [
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    },
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    },
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    }
+  ],
+  ""room_ids"": [1,2,3,4,5]
+}","{
+  ""message"": ""ok""
+}",編集の時はinputにidを追加
+,plan詳細,●,●,Admin,Plan,/cms/plan/detail,"{
+  ""plan_id"": 1
+}","{
+  ""name"": ""朝食付きプラン"",
+  ""summary"": ""夕食はなく、朝食のみ付いているコースです"",
+  ""detail"": ""詳細説明(HTMLタグ使えるようにする？)"",
+  ""price_type"": ""solid / dynamic"",
+  ""price"": 10000,
+  ""period_type"": ""limited / always"",
+  ""start_dt"": ""2018-01-20"",
+  ""end_dt"": ""20180-01-25"",
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""image_urls"": [
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    },
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    },
+    {
+      ""url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+      ""description"": ""アメニティ""
+    }
+  ],
+  ""room_ids"": [1,2,3,4,5]
+}",
+,plan一覧,●,●,Admin,Plan,/cms/plan,{},"{
+  ""plan_id"": 1,
+  ""name"": ""素泊まりプラン"",
+  ""price_type"": ""solid / dynamic"",
+  ""price"": 10000,
+  ""period_type"": ""limited / always"",
+  ""start_dt"": ""2018-01-20"",
+  ""end_dt"": ""20180-01-25"" 
+}",
+部屋,部屋一覧,●,●,Admin,Room,/cms/rooms,{},"{
+  ""rooms"": [
+    {
+       ""id"": 1,
+       ""name"": ""ダブルルーム"",
+       ""max_people_num"": 3,
+       ""room_sum"": 5
+    },
+     {
+       ""id"": 1,
+       ""name"": ""ダブルルーム"",
+       ""max_people_num"": 3,
+       ""room_sum"": 5
+    },
+     {
+       ""id"": 1,
+       ""name"": ""ダブルルーム"",
+       ""max_people_num"": 3,
+       ""room_sum"": 5
+    }
+  ]
+}",
+,部屋登録,●,●,Admin,Room,/cms/rooms/add,"{
+  ""name"": ""シングルルーム"",
+  ""max_people_num"": 3,
+  ""room_sum"": 5,
+  ""description"": ""部屋の説明"",
+  ""bed_type"": ""king"",
+  ""amenity_ids"": [1,2,3,4,5,6],
+  ""image_ids"": [1,2,3,4,5,6]
+}","{
+  ""message"": ""ok""
+}",
+,アメニティ一覧,●,●,Admin,Room,/cms/amenity,{},"{
+  ""amenity"": [
+    {
+       ""name"": ""歯ブラシ"",
+       ""id"": 1
+    },
+    {
+       ""name"": ""歯ブラシ"",
+       ""id"": 1
+    },
+    {
+       ""name"": ""歯ブラシ"",
+       ""id"": 1
+    },
+    {
+       ""name"": ""歯ブラシ"",
+       ""id"": 1
+    }
+  ]
+}",
+,,●,●,Admin,Rooms,/cms/amenity/add,"{
+  ""name"": ""バスタオル""
+}","{
+  ""message"": ""ok""
+}",追加されるたびにOScacheにいれるようにバッチを回す
+ホテル情報,ホテル情報登録,●,●,Admin,Hotel,/cms/hotel/registry,"{
+  ""name"": ""HOTEL SHE, KYOTO"",
+  ""company_name"": ""chillin株式会社"",
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""hashtag"": ""hotelsheosaka"",
+  ""twitter"": ""アカウントid"",
+  ""address"": ""〒552-0012 大阪府大阪市港区市岡１丁目２−５"",
+  ""location"": ""座標""
+}","{
+  ""message"": ""ok""
+}",
+,ホテル情報編集,●,●,Admin,Hotel,/cms/hotel/edit,"{
+  ""name"": ""HOTEL SHE, KYOTO"",
+  ""company_name"": ""chillin株式会社"",
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""hashtag"": ""hotelsheosaka"",
+  ""twitter"": ""アカウントid"",
+  ""address"": ""〒552-0012 大阪府大阪市港区市岡１丁目２−５"",
+  ""location"": ""座標""
+}","{
+  ""message"": ""ok""
+}",
+,ホテル情報取得,●,●,Admin,Hotel,/cms/hotel,{},"{
+  ""name"": ""HOTEL SHE, KYOTO"",
+  ""company_name"": ""chillin株式会社"",
+  ""eyecatch_url"": ""https://demo.a-blogcms.jp/archives/001/201605/a1e0f003ecb29b57d6392a532d17da6d.png"",
+  ""hashtag"": ""hotelsheosaka"",
+  ""twitter"": ""アカウントid"",
+  ""address"": ""〒552-0012 大阪府大阪市港区市岡１丁目２−５"",
+  ""location"": ""座標""
+}",
+予約管理,予約情報検索,●,●,Admin,Registry,/cms/registry,"{
+  ""checkin_dt"": ""2018-02-11"",
+  ""checkout_dt"": ""2018-02-11"",
+  ""lodging_dt"": ""2018-02-11"",
+  ""reg_dt"": ""2018-02-11"",
+  ""reg_num"": 11111,
+  ""name"": ""永田諒"",
+  ""room_type_id"": 1 
+}","{
+  ""reg_data"": [
+    {
+      ""status"": ""予約中"",
+      ""name"": ""永田諒"",
+      ""checkin_dt"": ""2018-02-11"",
+      ""checkout_dt"": ""2018-02-11"",
+      ""price_sum"": 19000,
+      ""reg_dt"": ""2018-01-18"",
+      ""room_id"": 1,
+      ""room_name"": ""シングルルーム"",
+      ""people_num"": 2,
+      ""plan_id"": 2,
+      ""plan_name"": ""素泊まりプラン"",
+      ""tel"": ""08000000000"",
+      ""address"": ""渋谷区松濤1-17-3"",
+      ""mail"": ""hoge@gmail.com"",
+      ""comment"": ""hoge"" 
+    },
+    {
+      ""status"": ""予約中"",
+      ""name"": ""永田諒"",
+      ""checkin_dt"": ""2018-02-11"",
+      ""checkout_dt"": ""2018-02-11"",
+      ""price_sum"": 19000,
+      ""reg_dt"": ""2018-01-18"",
+      ""room_id"": 1,
+      ""room_name"": ""シングルルーム"",
+      ""people_num"": 2,
+      ""plan_id"": 2,
+      ""plan_name"": ""素泊まりプラン"",
+      ""tel"": ""08000000000"",
+      ""address"": ""渋谷区松濤1-17-3"",
+      ""mail"": ""hoge@gmail.com"",
+      ""comment"": ""hoge""  
+    },
+    {
+      ""status"": ""予約中"",
+      ""name"": ""永田諒"",
+      ""checkin_dt"": ""2018-02-11"",
+      ""checkout_dt"": ""2018-02-11"",
+      ""price_sum"": 19000,
+      ""reg_dt"": ""2018-01-18"",
+      ""room_id"": 1,
+      ""room_name"": ""シングルルーム"",
+      ""people_num"": 2,
+      ""plan_id"": 2,
+      ""plan_name"": ""素泊まりプラン"",
+      ""tel"": ""08000000000"",
+      ""address"": ""渋谷区松濤1-17-3"",
+      ""mail"": ""hoge@gmail.com"",
+      ""comment"": ""hoge""  
+    }
+  ]
+}",
